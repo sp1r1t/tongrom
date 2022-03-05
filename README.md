@@ -7,4 +7,6 @@ yarn serve
 ```
 
 ## stuff to know
-`tongrom.js` is paperscript, ne ES6 featuers.
+`tongrom.js` is paperscript
+* no ES6 featuers
+* use `var` everywhere
