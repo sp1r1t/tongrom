@@ -5,9 +5,11 @@
     "es6": true,
     "mocha": true
   },
+  "extends": "standard",
   "globals": {
     "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
+    "SharedArrayBuffer": "readonly",
+    "paper": "readonly"
   },
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -22,10 +24,16 @@
     "max-nested-callbacks": ["error", 3],
     "max-params": ["error", 3],
     "max-statements": ["error", 15],
-    "max-statements-per-line": ["error", { "max": 1 }]
+    "max-statements-per-line": ["error", { "max": 1 }],
+    "semi": "off",
+    "comma-dangle": ["warn", "always-multiline"],
+    "no-var": "off",
+    "no-new": "off",
+    "space-before-function-paren": "off"
   },
   "settings": {
     "html/indent": "+2",
     "html/report-bad-indent": "warn"
-  }
+  },
+  "ignorePatterns": ["libs"]
 }

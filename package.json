@@ -30,32 +30,16 @@
     "remark-preset-lint-recommended": "^6.1.0",
     "stylelint": "^14.2.0",
     "stylelint-config-standard": "^24.0.0",
-    "browser-sync": "^2.26.14",
-    "webpack": "^5.37.1",
-    "webpack-cli": "^4.7.0",
-    "css-loader": "^6.3.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.3.1",
-    "clean-webpack-plugin": "4.0.0",
-    "webpack-dev-server": "^3.11.2",
-    "webpack-merge": "^5.7.3",
-    "favicons": "^6.2.0",
-    "favicons-webpack-plugin": "^5.0.2",
-    "extract-css-chunks-webpack-plugin": "^4.9.0",
-    "css-minimizer-webpack-plugin": "^3.0.0",
-    "terser-webpack-plugin": "^5.1.2",
-    "babel-loader": "^8.2.2",
-    "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.2.0",
-    "eslint-webpack-plugin": "^3.0.1"
+    "browser-sync": "^2.26.14"
   },
   "scripts": {
     "lint:css": "stylelint **/*.html **/*.css",
     "lint:js": "eslint .",
     "lint:md": "remark .",
-    "serve": "webpack serve --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
-    "serve:build": "webpack serve --config webpack.prod.js"
+    "serve": "browser-sync start --server ./source --port 8080 --watch ./source --open"
   },
-  "resolutions": {}
+  "resolutions": {},
+  "prettier": {
+    "singleQuote": true
+  }
 }
