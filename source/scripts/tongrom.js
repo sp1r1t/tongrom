@@ -20,30 +20,45 @@ function drawSecantOn(shape) {
   return secant;
 }
 
-// Create a circle shaped path, which is automatically
-// placed within the active layer of the project:
-var circle = new paper.Path.Circle({
-  center: [200, 200],
-  radius: 80,
-  fillColor: 'white',
-  strokeColor: 'black',
-});
+function splitOnSecant(shape, start, end) {
+  shape.splitAt(shape.getNearestLocation(start));
+  var newPart = shape.splitAt(shape.getNearestLocation(end));
 
-console.log('full circle area', circle.area);
+  shape.fillColor = 'red';
+  newPart.fillColor = 'blue';
+  return newPart;
+}
 
-// var intersections = myPath.getIntersections(circle);
-// // console.log(intersections);
+var useCoreShape;
+useCoreShape = 'rectangle';
+useCoreShape = 'circle';
+var coreShape;
+switch (useCoreShape) {
+  case 'circle':
+    coreShape = coreShape = new paper.Path.Circle({
+      center: [200, 200],
+      radius: 80,
+      fillColor: 'white',
+      strokeColor: 'black',
+    });
+    break;
+  case 'rectangle':
+    var rectangle = new paper.Rectangle(
+      new paper.Point(100, 100),
+      new paper.Size(200, 200)
+    );
+    coreShape = new paper.Path.Rectangle(rectangle);
+    coreShape.strokeColor = 'black';
+}
 
-// for (var i = 0; i < intersections.length; i++) {
-//   createDot(intersections[i].point);
-// }
+console.log('core shape area', coreShape.area);
 
 var secants = [];
 
 var i = 0;
 for (; i < 1; i++) {
   console.log('drawing secant', 'i=', i);
-  var newSecant = drawSecantOn(circle);
+  var newSecant = drawSecantOn(coreShape);
 
   var secantHasIntersections = false;
   for (var j = 0; j < secants.length; j++) {
@@ -68,13 +83,16 @@ for (; i < 1; i++) {
 
 var secantStart = secants[0].segments[0].point;
 var secantEnd = secants[0].segments[1].point;
-circle.splitAt(circle.getNearestLocation(secantStart));
-var circlePart = circle.splitAt(circle.getNearestLocation(secantEnd));
-circle.fillColor = 'red';
-console.log('circle area after split', circle.area);
-console.log('circle part area', circlePart.area);
 
-console.log('sum', circle.area + circlePart.area);
-circlePart.fillColor = 'blue';
+var newPart = splitOnSecant(coreShape, secantStart, secantEnd);
 
+var clone1 = coreShape.clone();
+clone1.scale(0.5);
+clone1.position.x = 650;
+clone1.position.y = 350;
+
+var clone2 = newPart.clone();
+clone2.scale(0.5);
+clone2.position.x = 800;
+clone2.position.y = 350;
 // circlePart.position.x += 300;

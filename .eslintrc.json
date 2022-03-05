@@ -17,7 +17,13 @@
   },
   "plugins": ["html", "markdown", "json-format", "filenames"],
   "rules": {
-    "indent": ["warn", 2],
+    "indent": [
+      "warn",
+      2,
+      {
+        "switchCase": 2
+      }
+    ],
     "complexity": ["error", 12],
     "max-depth": ["error", 3],
     "max-lines": ["error", 120],
@@ -26,7 +32,7 @@
     "max-statements": ["error", 15],
     "max-statements-per-line": ["error", { "max": 1 }],
     "semi": "off",
-    "comma-dangle": ["warn", "always-multiline"],
+    "comma-dangle": ["off", "always-multiline"],
     "no-var": "off",
     "no-new": "off",
     "space-before-function-paren": "off"
