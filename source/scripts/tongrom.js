@@ -29,6 +29,8 @@ var circle = new paper.Path.Circle({
   strokeColor: 'black',
 });
 
+console.log('full circle area', circle.area);
+
 // var intersections = myPath.getIntersections(circle);
 // // console.log(intersections);
 
@@ -39,7 +41,7 @@ var circle = new paper.Path.Circle({
 var secants = [];
 
 var i = 0;
-for (; i < 2; i++) {
+for (; i < 1; i++) {
   console.log('drawing secant', 'i=', i);
   var newSecant = drawSecantOn(circle);
 
@@ -63,3 +65,16 @@ for (; i < 2; i++) {
   }
   secants.push(newSecant);
 }
+
+var secantStart = secants[0].segments[0].point;
+var secantEnd = secants[0].segments[1].point;
+circle.splitAt(circle.getNearestLocation(secantStart));
+var circlePart = circle.splitAt(circle.getNearestLocation(secantEnd));
+circle.fillColor = 'red';
+console.log('circle area after split', circle.area);
+console.log('circle part area', circlePart.area);
+
+console.log('sum', circle.area + circlePart.area);
+circlePart.fillColor = 'blue';
+
+// circlePart.position.x += 300;
