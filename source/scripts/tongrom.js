@@ -20,12 +20,10 @@ function drawSecantOn(shape) {
   return secant;
 }
 
-function splitOnSecant(shape, start, end) {
+function splitOnSecant(shape, start, end, color) {
   shape.splitAt(shape.getNearestLocation(start));
   var newPart = shape.splitAt(shape.getNearestLocation(end));
-
-  shape.fillColor = 'red';
-  newPart.fillColor = 'blue';
+  newPart.fillColor = color || 'blue';
   return newPart;
 }
 
@@ -83,15 +81,18 @@ for (; i < 1; i++) {
 
 var secantStart = secants[0].segments[0].point;
 var secantEnd = secants[0].segments[1].point;
-
-var newPart = splitOnSecant(coreShape, secantStart, secantEnd);
+var segment2 = splitOnSecant(coreShape, secantStart, secantEnd);
+coreShape.fillColor = 'red';
+// var secantStart2 = secants[1].segments[0].point;
+// var secantEnd2 = secants[1].segments[1].point;
+// var segment3 = splitOnSecant(coreShape, secantStart2, secantEnd2);
 
 var clone1 = coreShape.clone();
 clone1.scale(0.5);
 clone1.position.x = 650;
 clone1.position.y = 350;
 
-var clone2 = newPart.clone();
+var clone2 = segment2.clone();
 clone2.scale(0.5);
 clone2.position.x = 800;
 clone2.position.y = 350;
