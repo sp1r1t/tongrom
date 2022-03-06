@@ -53,7 +53,7 @@ var coreShape;
 switch (useCoreShape) {
   case 'circle':
     coreShape = coreShape = new paper.Path.Circle({
-      center: [200, 200],
+      center: [100, 100],
       radius: 80,
       fillColor: 'white',
       strokeColor: 'black',
@@ -93,7 +93,7 @@ function splitShape(shape) {
     strokeColor: 'black',
   });
   compound2.position.y += 150;
-  compound2.position.x += 350;
+  compound2.position.x += 500;
 
   // return the new shapes
   return [compound1, compound2];
@@ -109,10 +109,10 @@ function splitShapeWithMinimalArea(shape) {
     var partsTooSmall = false;
     for (var i = 0; i < parts.length; i++) {
       if (
-        parts[i].area < shape.area * minimumPercentageOfPart &&
+        parts[i].area < shape.area * minimumPercentageOfPart ||
         parts[i].area < minimumAreaOfPart
       ) {
-        console.log('Part', i, 'is too small');
+        console.log('Part', i, 'is too small', parts[i].area);
         partsTooSmall = true;
         break;
       }
@@ -132,22 +132,6 @@ function splitShapeWithMinimalArea(shape) {
 
   return parts;
 }
-
-// console.log(divideShape(coreShape));
-// console.log('core shape area', coreShape.area);
-var parts = splitShapeWithMinimalArea(coreShape);
-// console.log('parts', parts);
-// for (var i = 0; i < parts.length; i++) {
-//   console.log('part', i, parts[i]);
-//   // splitShapeWithMinimalArea(parts[i]);
-// }
-
-var part1copy = parts[0].clone();
-
-part1copy.position.x += 50;
-part1copy.position.y -= 200;
-part1copy.strokeColor = 'red';
-// // part1copy.removeChildren(1);
 
 function splitCompound(compound) {
   var removedParts = [];
@@ -186,15 +170,13 @@ function splitCompound(compound) {
     children: removedParts,
     strokeColor: 'black',
   });
-
-  newCompound.position.x += 200;
-
   console.log('area', compound.area, newCompound.area);
 
   return [compound, newCompound];
 }
 
-function splitCompoundWithMinimalArea(compound) {
+function splitCompoundWithMinimalArea(compoundIn) {
+  var compound = compoundIn.clone();
   var parts;
 
   while (true) {
@@ -204,10 +186,10 @@ function splitCompoundWithMinimalArea(compound) {
     var partsTooSmall = false;
     for (var i = 0; i < parts.length; i++) {
       if (
-        parts[i].area < compound.area * minimumPercentageOfPart &&
+        parts[i].area < compound.area * minimumPercentageOfPart ||
         parts[i].area < minimumAreaOfPart
       ) {
-        console.log('Part', i, 'is too small');
+        console.log('Part', i, 'is too small', parts[i].area);
         partsTooSmall = true;
         break;
       }
@@ -228,8 +210,30 @@ function splitCompoundWithMinimalArea(compound) {
   return parts;
 }
 
-splitCompoundWithMinimalArea(part1copy);
+var parts = splitShapeWithMinimalArea(coreShape);
 
+// var part1copy = parts[0].clone();
+
+// part1copy.position.x += 50;
+// part1copy.position.y -= 200;
+// part1copy.strokeColor = 'red';
+
+if (parts[0].area > 300) {
+  var parts2 = splitCompoundWithMinimalArea(parts[0]);
+
+  parts2[0].position.x -= 50;
+  parts2[0].position.y += 200;
+  parts2[1].position.x += 50;
+  parts2[1].position.y += 200;
+}
+
+if (parts2[0].area > 300) {
+  var parts3 = splitCompoundWithMinimalArea(parts2[0]);
+  parts3[0].position.x -= 50;
+  parts3[0].position.y += 200;
+  parts3[1].position.x += 50;
+  parts3[1].position.y += 200;
+}
 // var secants = [];
 
 // var i = 0;
