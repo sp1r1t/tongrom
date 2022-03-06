@@ -1,3 +1,6 @@
+var minimumPercentageOfPart = 0.05;
+var minimumAreaOfPart = 100;
+
 function drawDot(center, color) {
   new paper.Path.Circle({
     center: center,
@@ -11,25 +14,37 @@ function getRandomPointOn(shape) {
 }
 
 function getRandomLocationOn(shape) {
+  if (shape.children) {
+    return getRandomLocationOnCompound(shape);
+  }
   return shape.getLocationAt(shape.length * Math.random());
 }
 
-function drawSecantOn(shape) {
-  var secant = new paper.Path();
-  secant.strokeColor = '#222';
-  var start = getRandomPointOn(shape);
-  var end = getRandomPointOn(shape);
-  secant.add(start);
-  secant.add(end);
-  return secant;
+function getRandomLocationOnCompound(shape) {
+  var randomIndex = Math.floor(Math.random() * shape.children.length);
+  var child = shape.children[randomIndex];
+  return {
+    child: child,
+    location: child.getLocationAt(child.length * Math.random()),
+  };
 }
 
-function splitOnSecant(shape, start, end, color) {
-  shape.splitAt(shape.getNearestLocation(start));
-  var newPart = shape.splitAt(shape.getNearestLocation(end));
-  newPart.fillColor = color || 'blue';
-  return newPart;
-}
+// function drawSecantOn(shape) {
+//   var secant = new paper.Path();
+//   secant.strokeColor = '#222';
+//   var start = getRandomPointOn(shape);
+//   var end = getRandomPointOn(shape);
+//   secant.add(start);
+//   secant.add(end);
+//   return secant;
+// }
+
+// function splitOnSecant(shape, start, end, color) {
+//   shape.splitAt(shape.getNearestLocation(start));
+//   var newPart = shape.splitAt(shape.getNearestLocation(end));
+//   newPart.fillColor = color || 'blue';
+//   return newPart;
+// }
 
 var useCoreShape;
 useCoreShape = 'rectangle';
@@ -52,64 +67,6 @@ switch (useCoreShape) {
     coreShape = new paper.Path.Rectangle(rectangle);
     coreShape.strokeColor = 'black';
 }
-
-console.log('core shape area', coreShape.area);
-var parts = splitShapeWithMinimalArea(coreShape);
-// var secants = [];
-
-// var i = 0;
-// for (; i < 1; i++) {
-//   console.log('drawing secant', 'i=', i);
-//   var newSecant = drawSecantOn(coreShape);
-
-//   var secantHasIntersections = false;
-//   for (var j = 0; j < secants.length; j++) {
-//     var intersections = newSecant.getIntersections(secants[j]);
-//     if (intersections.length) {
-//       console.log('secant has intersections');
-//       newSecant.remove();
-//       i = i - 1;
-//       secantHasIntersections = true;
-//       break;
-//     }
-//   }
-//   if (secantHasIntersections) {
-//     continue;
-//   }
-//   console.log(newSecant.segments);
-//   for (var k = 0; k < newSecant.segments.length; k++) {
-//     drawDot(newSecant.segments[k].point);
-//   }
-//   secants.push(newSecant);
-// }
-
-// var secantStart = secants[0].segments[0].point;
-// var secantEnd = secants[0].segments[1].point;
-// var segment2 = splitOnSecant(coreShape, secantStart, secantEnd);
-// var part1 = new paper.CompoundPath({
-//   children: [coreShape, secants[0]],
-//   // fillColor: 'black',
-//   strokeColor: 'black',
-// });
-// console.log('part1 area', part1.area);
-// part1.position.x = 250;
-// coreShape.fillColor = 'red';
-// var secantStart2 = secants[1].segments[0].point;
-// var secantEnd2 = secants[1].segments[1].point;
-// var segment3 = splitOnSecant(coreShape, secantStart2, secantEnd2);
-// coreShape.selected = true;
-// coreShape.closed = true;
-
-// var clone1 = part1.clone();
-// clone1.scale(0.5);
-// clone1.position.x = 650;
-// clone1.position.y = 350;
-
-// var clone2 = segment2.clone();
-// clone2.scale(0.5);
-// clone2.position.x = 800;
-// clone2.position.y = 350;
-// circlePart.position.x += 300;
 
 function splitShape(shape) {
   // duplicate shape
@@ -151,7 +108,10 @@ function splitShapeWithMinimalArea(shape) {
     // check if a part is too small
     var partsTooSmall = false;
     for (var i = 0; i < parts.length; i++) {
-      if (parts[i].area < shape.area * 0.1) {
+      if (
+        parts[i].area < shape.area * minimumPercentageOfPart &&
+        parts[i].area < minimumAreaOfPart
+      ) {
         console.log('Part', i, 'is too small');
         partsTooSmall = true;
         break;
@@ -172,3 +132,128 @@ function splitShapeWithMinimalArea(shape) {
 
   return parts;
 }
+
+// console.log(divideShape(coreShape));
+// console.log('core shape area', coreShape.area);
+var parts = splitShapeWithMinimalArea(coreShape);
+// console.log('parts', parts);
+// for (var i = 0; i < parts.length; i++) {
+//   console.log('part', i, parts[i]);
+//   // splitShapeWithMinimalArea(parts[i]);
+// }
+
+var part1copy = parts[0].clone();
+
+part1copy.position.x += 50;
+part1copy.position.y -= 200;
+part1copy.strokeColor = 'red';
+// // part1copy.removeChildren(1);
+
+function splitCompound(compound) {
+  var removedParts = [];
+  var cutStart = getRandomLocationOnCompound(compound);
+  var cutEnd = getRandomLocationOnCompound(compound);
+
+  while (cutStart.child == cutEnd.child) {
+    console.log('Cutting points on same line');
+    cutEnd = getRandomLocationOnCompound(compound);
+  }
+
+  for (var i = 0; i < 2; i++) {
+    var result;
+    if (i === 0) {
+      result = cutStart;
+    } else {
+      result = cutEnd;
+    }
+    // drawDot(result.location.point);
+
+    result.child.splitAt(result.location);
+
+    var removedChild = compound.removeChildren(
+      result.child.index,
+      result.child.index + 1
+    );
+    removedParts.push(removedChild[0]);
+  }
+
+  var line = new paper.Path(cutStart.location.point, cutEnd.location.point);
+  compound.addChild(line.clone());
+
+  removedParts.push(line);
+
+  var newCompound = new paper.CompoundPath({
+    children: removedParts,
+    strokeColor: 'black',
+  });
+
+  newCompound.position.x += 200;
+
+  console.log('area', compound.area, newCompound.area);
+
+  return [compound, newCompound];
+}
+
+function splitCompoundWithMinimalArea(compound) {
+  var parts;
+
+  while (true) {
+    parts = splitCompound(compound);
+
+    // check if a part is too small
+    var partsTooSmall = false;
+    for (var i = 0; i < parts.length; i++) {
+      if (
+        parts[i].area < compound.area * minimumPercentageOfPart &&
+        parts[i].area < minimumAreaOfPart
+      ) {
+        console.log('Part', i, 'is too small');
+        partsTooSmall = true;
+        break;
+      }
+    }
+
+    // if part is too small, delete all parts
+    // and start over
+    if (partsTooSmall) {
+      for (var i = 0; i < parts.length; i++) {
+        parts[i].remove();
+      }
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  return parts;
+}
+
+splitCompoundWithMinimalArea(part1copy);
+
+// var secants = [];
+
+// var i = 0;
+// for (; i < 1; i++) {
+//   console.log('drawing secant', 'i=', i);
+//   var newSecant = drawSecantOn(coreShape);
+
+//   var secantHasIntersections = false;
+//   for (var j = 0; j < secants.length; j++) {
+//     var intersections = newSecant.getIntersections(secants[j]);
+//     if (intersections.length) {
+//       console.log('secant has intersections');
+//       newSecant.remove();
+//       i = i - 1;
+//       secantHasIntersections = true;
+//       break;
+//     }
+//   }
+//   if (secantHasIntersections) {
+//     continue;
+//   }
+//   console.log(newSecant.segments);
+//   for (var k = 0; k < newSecant.segments.length; k++) {
+//     drawDot(newSecant.segments[k].point);
+//   }
+//   secants.push(newSecant);
+// }
